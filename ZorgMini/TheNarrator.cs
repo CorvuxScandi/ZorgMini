@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace ZorgMini
     {
         public List<Item> Inventory { get; set; }
 
-        public int RoomTracker { get; set; }
+        public int RoomTracker = 1;
 
         public List<string> UserCommand { get; set; }
 
@@ -20,13 +21,15 @@ namespace ZorgMini
         {"GO", "WEST", "NORTH", "EAST", "SOUTH", "USE",
             "LOOK", "HELP", "INVENTORY", "PICK UP"
         };
-
-        Rooms rooms = new Rooms();
         
-        private void RoomBreakdow()
+        Rooms room = new Rooms();
+
+
+        private Rooms GetRoom()
         {
-            rooms.adventureMap.Select(x => x.DoorsInRoom);
+            return room.adventureMap[RoomTracker -1];
         }
+
         
 
         public string TellNarrator(string userIn)
@@ -37,8 +40,8 @@ namespace ZorgMini
             switch (command[0])
             {
                 case "HELP":
-                    string userKeywords = "";
 
+                    string userKeywords = "";
                     foreach (var word in Keywords)
                     {
                         userKeywords += word + ", ";
@@ -49,7 +52,6 @@ namespace ZorgMini
                 case "INVENTORY":
                     
                     string userInventory = "";
-
                     foreach (var item in Inventory)
                     {
                         userInventory += item + ", ";
@@ -58,13 +60,43 @@ namespace ZorgMini
                         
                 case "LOOK":
 
-                    string lookAtRoom = rooms.adventureMap[RoomTracker].RoomDescription;
+                    string lookAtRoom = GetRoom().RoomDescription;
                     return lookAtRoom;
 
                 case "GO":
+                    string outcome = "";
+                    try
+                    {
+                        RoomTracker = Convert.ToInt32(GetRoom().DoorsInRoom.Where(x => x.Orientation == command[1]).Select(x => x.GoTo));
+                        outcome = $"You walk trough the {command[1].ToLower()} door.";
+                    }
+                        catch (Exception)
+                    {
+                        outcome = "You cannot go that way.";
+                        
+                    }
+                    return outcome;
 
-                    
+                case "PICK UP":
+                    string outcome2 = "";
 
+
+                    if (UserCommand.Contains("KEY"))
+                    {
+                       
+                        try
+                        {
+                            Inventory.Add((Item)GetRoom().ItemsInRoom.Select(x => x.Description == command[1]));
+                            GetRoom().ItemsInRoom.Remove((Item)GetRoom().ItemsInRoom.Select(x => x.Description == command[1]));
+
+                            outcome2 = $"You pick up the {command[1]} {command[2]}";
+                        }
+                        catch (Exception)
+                        {
+                            outcome2 = "There is no sutch KEY in this room";
+                        }
+                    }
+                        return outcome2;
                     
             }
 

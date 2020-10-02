@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ZorgMini
 {
-    public enum Orientation { North, South, West, East }
+    
 
     public class Doors
     {
@@ -15,8 +15,16 @@ namespace ZorgMini
         
         public bool Locked { get; set; }
 
-        public Orientation Orientation { get; set; }
+        public string Orientation { set; get; }
 
+        public int GoTo { get; set; }
 
+        public Doors(int id, bool locked, string orientation, int goTo)
+        {
+            ID = id;
+            Locked = locked;
+            Orientation = orientation;
+            GoTo = goTo;
+        }
     }
 }

@@ -8,11 +8,22 @@ namespace ZorgMini
 {
     public class Item
     {
-        public int ID { get; set; }
-                
+        public int Unlock { get; set; }
+
         public string Name { get; set; }
 
         public string Description { get; set; }
 
+        public Item(string name, string description)
+        {
+            Name = name;
+            Description = description;
+        }
+        public Item(string name, string description, int opens)
+        {
+            Name = name;
+            Description = description;
+            Unlock = opens;
+        }
     }
 }
