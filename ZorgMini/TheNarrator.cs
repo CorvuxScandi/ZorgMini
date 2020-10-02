@@ -78,12 +78,10 @@ namespace ZorgMini
                     return outcome;
 
                 case "PICK UP":
+
                     string outcome2 = "";
-
-
                     if (UserCommand.Contains("KEY"))
                     {
-                       
                         try
                         {
                             Inventory.Add((Item)GetRoom().ItemsInRoom.Select(x => x.Description == command[1]));
