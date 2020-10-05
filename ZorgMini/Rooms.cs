@@ -7,12 +7,10 @@ using System.Threading.Tasks;
 
 namespace ZorgMini
 {
-
-
     public class Rooms
     {
 
-        internal int ID { get; set; }
+        internal int RoomID { get; set; }
 
         public List<Doors> DoorsInRoom;
 
@@ -22,7 +20,7 @@ namespace ZorgMini
 
         public List<Doors> GetDoors(int roomID)
         {
-            return (List<Doors>)adventureMap.Where(x => x.ID == roomID).Select(x => x.DoorsInRoom);
+            return (List<Doors>)adventureMap.Where(x => x.RoomID == roomID).Select(x => x.DoorsInRoom);
         }
 
 
@@ -32,13 +30,13 @@ namespace ZorgMini
         {
             new Rooms() //first Room
             {
-                ID = 1,
+                RoomID = 1,
 
                 ItemsInRoom = new List<Item>()
                 {
                    new Item("table", "wooden"),
                    new Item("chair", "wooden"),
-                   new Item("KEY", "rusty", 14)
+                   new Item("KEY", "rusty", 14) {CanBePickedUp = true}
                 },
 
                 DoorsInRoom = new List<Doors>()
@@ -53,7 +51,7 @@ namespace ZorgMini
 
             new Rooms() //second Room
             {
-                ID = 2,
+                RoomID = 2,
 
 
             }

@@ -8,22 +8,26 @@ namespace ZorgMini
 {
     public class Item
     {
-        public int Unlock { get; set; }
+        public int ItemID { get; set; }
+
+        public int CanBeUsedOn { get; set; }
 
         public string Name { get; set; }
 
         public string Description { get; set; }
+
+        public bool CanBePickedUp = false;
 
         public Item(string name, string description)
         {
             Name = name;
             Description = description;
         }
-        public Item(string name, string description, int opens)
+        public Item(string name, string description, int canBeUsedOn)
         {
             Name = name;
             Description = description;
-            Unlock = opens;
+            CanBeUsedOn = canBeUsedOn;
         }
     }
 }

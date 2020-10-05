@@ -11,7 +11,7 @@ namespace ZorgMini
     public class Doors
     {
 
-        public int ID { get; set; }
+        public int DoorID { get; set; }
         
         public bool Locked { get; set; }
 
@@ -19,9 +19,9 @@ namespace ZorgMini
 
         public int GoTo { get; set; }
 
-        public Doors(int id, bool locked, string orientation, int goTo)
+        public Doors(int doorID, bool locked, string orientation, int goTo)
         {
-            ID = id;
+            DoorID = doorID;
             Locked = locked;
             Orientation = orientation;
             GoTo = goTo;

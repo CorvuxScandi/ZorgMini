@@ -51,12 +51,11 @@ namespace ZorgMini
 
                 case "INVENTORY":
                     
-                    string userInventory = "";
                     foreach (var item in Inventory)
                     {
-                        userInventory += item + ", ";
+                        narratorOut += item + ", ";
                     }
-                    narratorOut = userInventory;
+                    
                     break;
                         
                 case "LOOK":
@@ -81,20 +80,36 @@ namespace ZorgMini
 
                 case "PICK UP":
 
-                    if (UserCommand.Contains("KEY"))
-                    {
-                        try
-                        {
-                            Inventory.Add((Item)GetRoom().ItemsInRoom.Select(x => x.Description == command[1]));
-                            GetRoom().ItemsInRoom.Remove((Item)GetRoom().ItemsInRoom.Select(x => x.Description == command[1]));
 
-                            narratorOut = $"You pick up the {command[1]} {command[2]}";
-                        }
-                        catch (Exception)
+                    if (GetRoom().ItemsInRoom.Contains((Item)GetRoom().ItemsInRoom.Where(x => x.Name == command[2]
+                                                         && x.CanBePickedUp == true)))
+                    {
+                        Inventory.Add((Item)GetRoom().ItemsInRoom.Where(x => x.Name == command[2]));
+                        narratorOut = $"You pick up the {command[1]} {command[2]}.";
+                    }
+                    else
+                    {
+                        narratorOut = $"You cannot pick up the {command[1]} {command[2]}.";
+                    }
+                    break;
+
+                case "USE":
+
+                    if (Inventory.Contains((Item)Inventory.Where(x => x.Description == command[1] && x.Name == command[2])))
+                    {
+                        if (command[3] == "ON")
                         {
-                            narratorOut = "There is no sutch KEY in this room";
+                            int ID1 = Convert.ToInt32(Inventory.Where(x => x.Name == command[2]).Select(x => x.CanBeUsedOn));
+                            int ID2 = Convert.ToInt32(Inventory.Where(x => x.Name == command[5]).Select(x => x.ItemID));
+
+                            if (ID1 == ID2)
+                            {
+
+                            }
                         }
                     }
+
+
                     break;
                     
             }
