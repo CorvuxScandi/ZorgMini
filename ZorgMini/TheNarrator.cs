@@ -32,11 +32,10 @@ namespace ZorgMini
 
         public string TellNarrator(string userIn)
         {
-
-            string[] command = userIn.ToUpper().Split(' ');
+            UserCommand = userIn.ToUpper().Split(' ').ToList();
             string narratorOut = "";
 
-            switch (command[0])
+            switch (UserCommand[0])
             {
                 case "HELP":
 
@@ -68,8 +67,8 @@ namespace ZorgMini
                     
                     try
                     {
-                        RoomTracker = Convert.ToInt32(GetRoom().DoorsInRoom.Where(x => x.Orientation == command[1]).Select(x => x.GoTo));
-                        narratorOut = $"You walk trough the {command[1].ToLower()} door.";
+                        RoomTracker = Convert.ToInt32(GetRoom().DoorsInRoom.Where(x => x.Orientation == UserCommand[1]).Select(x => x.GoTo));
+                        narratorOut = $"You walk trough the {UserCommand[1].ToLower()} door.";
                     }
                         catch (Exception)
                     {
@@ -81,41 +80,73 @@ namespace ZorgMini
                 case "PICK UP":
 
 
-                    if (GetRoom().ItemsInRoom.Contains((Item)GetRoom().ItemsInRoom.Where(x => x.Name == command[2]
+                    if (GetRoom().ItemsInRoom.Contains((Item)GetRoom().ItemsInRoom.Where(x => x.Name == UserCommand[2]
                                                          && x.CanBePickedUp == true)))
                     {
-                        Inventory.Add((Item)GetRoom().ItemsInRoom.Where(x => x.Name == command[2]));
-                        narratorOut = $"You pick up the {command[1]} {command[2]}.";
+                        Inventory.Add((Item)GetRoom().ItemsInRoom.Where(x => x.Name == UserCommand[2]));
+                        narratorOut = $"You pick up the {UserCommand[1]} {UserCommand[2]}.";
                     }
                     else
                     {
-                        narratorOut = $"You cannot pick up the {command[1]} {command[2]}.";
+                        narratorOut = $"You cannot pick up the {UserCommand[1]} {UserCommand[2]}.";
                     }
                     break;
 
                 case "USE":
 
-                    if (Inventory.Contains((Item)Inventory.Where(x => x.Description == command[1] && x.Name == command[2])))
+                    if(UserCommand.Contains("KEY") && UserCommand.Contains("DOOR"))
                     {
-                        if (command[3] == "ON")
+                        int key = Convert.ToInt32(Inventory.Where(x => x.Name == "Key" && x.Description == UserCommand[1])
+                                                           .Select(x => x.ItemID));
+                        int door = Convert.ToInt32(GetRoom().DoorsInRoom.Where(x => x.Orientation == UserCommand[4])
+                            .Select(x => x.DoorID));
+
+                        if(key == door)
                         {
-                            int ID1 = Convert.ToInt32(Inventory.Where(x => x.Name == command[2]).Select(x => x.CanBeUsedOn));
-                            int ID2 = Convert.ToInt32(Inventory.Where(x => x.Name == command[5]).Select(x => x.ItemID));
-
-                            if (ID1 == ID2)
-                            {
-
-                            }
+                            Doors locked = (Doors)GetRoom().DoorsInRoom.Where(x => x.DoorID == door);
+                            locked.Locked = false;
+                            narratorOut = $"You unlocked the {UserCommand[3]} door.";
                         }
                     }
+                    //if (Inventory.Contains(
+                    //    (Item)Inventory.Where(x => x.Description == UserCommand[1] 
+                    //    && x.Name == UserCommand[2])))
+                    //{
+                    //    Item item1 = (Item)Inventory.Where(x => x.Name == UserCommand[2]);
+                    //    ItemInteration(item1);
+                        
+                    //}
+                    //if (GetRoom().ItemsInRoom.Contains(
+                    //    (Item)GetRoom().ItemsInRoom.Where(x => x.Description == UserCommand[1]
+                    //    && x.Name == UserCommand[2])))
+                    //{
 
+                    //}
 
-                    break;
-                    
+                        break;
             }
-
             return narratorOut;
         }
+        private string ItemInteration(Item item1)
+        {
+            string result = "";
+            if (UserCommand[3] == "ON")
+            {
+                Item item2 = (Item)Inventory.Where(x => x.Name == UserCommand[5]);
+                int ID1 = item1.CanBeUsedOn;
+                int ID2 = item2.ItemID;
+
+                if (ID1 == ID2)
+                {
+                    
+                }
+            }
+
+
+
+            return result;
+        }
+        
 
     }
 }
