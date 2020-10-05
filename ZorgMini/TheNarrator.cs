@@ -30,12 +30,11 @@ namespace ZorgMini
             return room.adventureMap[RoomTracker -1];
         }
 
-        
-
         public string TellNarrator(string userIn)
         {
 
             string[] command = userIn.ToUpper().Split(' ');
+            string narratorOut = "";
 
             switch (command[0])
             {
@@ -47,7 +46,8 @@ namespace ZorgMini
                         userKeywords += word + ", ";
                     }
 
-                    return userKeywords;
+                    narratorOut = userKeywords;
+                    break;
 
                 case "INVENTORY":
                     
@@ -56,30 +56,31 @@ namespace ZorgMini
                     {
                         userInventory += item + ", ";
                     }
-                    return userInventory;
+                    narratorOut = userInventory;
+                    break;
                         
                 case "LOOK":
 
                     string lookAtRoom = GetRoom().RoomDescription;
-                    return lookAtRoom;
+                    narratorOut = lookAtRoom;
+                    break;
 
                 case "GO":
-                    string outcome = "";
+                    
                     try
                     {
                         RoomTracker = Convert.ToInt32(GetRoom().DoorsInRoom.Where(x => x.Orientation == command[1]).Select(x => x.GoTo));
-                        outcome = $"You walk trough the {command[1].ToLower()} door.";
+                        narratorOut = $"You walk trough the {command[1].ToLower()} door.";
                     }
                         catch (Exception)
                     {
-                        outcome = "You cannot go that way.";
+                        narratorOut = "You cannot go that way.";
                         
                     }
-                    return outcome;
+                    break;
 
                 case "PICK UP":
 
-                    string outcome2 = "";
                     if (UserCommand.Contains("KEY"))
                     {
                         try
@@ -87,18 +88,18 @@ namespace ZorgMini
                             Inventory.Add((Item)GetRoom().ItemsInRoom.Select(x => x.Description == command[1]));
                             GetRoom().ItemsInRoom.Remove((Item)GetRoom().ItemsInRoom.Select(x => x.Description == command[1]));
 
-                            outcome2 = $"You pick up the {command[1]} {command[2]}";
+                            narratorOut = $"You pick up the {command[1]} {command[2]}";
                         }
                         catch (Exception)
                         {
-                            outcome2 = "There is no sutch KEY in this room";
+                            narratorOut = "There is no sutch KEY in this room";
                         }
                     }
-                        return outcome2;
+                    break;
                     
             }
 
-
+            return narratorOut;
         }
 
     }

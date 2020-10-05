@@ -37,8 +37,7 @@ namespace ZorgMini
 
         static void PlayerInput()
         {
-              =
-           new UserCommand(Console.ReadLine().ToUpper());  
+          
 
 
         }
