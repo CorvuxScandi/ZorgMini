@@ -22,9 +22,6 @@ namespace ZorgMini
         {
             return (List<Doors>)adventureMap.Where(x => x.RoomID == roomID).Select(x => x.DoorsInRoom);
         }
-
-
-
         
         public List<Rooms> adventureMap = new List<Rooms>()
         {
@@ -34,8 +31,8 @@ namespace ZorgMini
 
                 ItemsInRoom = new List<Item>()
                 {
-                   new Item("table", "wooden"),
-                   new Item("chair", "wooden"),
+                   new Item("table", "a wooden"),
+                   new Item("chair", "a wooden"),
                    new Item("KEY", "rusty", 14) {CanBePickedUp = true}
                 },
 
@@ -45,7 +42,7 @@ namespace ZorgMini
                 },
 
 
-                RoomDescription = "damp and low lit room made of stone"
+                RoomDescription = "You are in a damp and low lit room made of stone."
 
             },
 

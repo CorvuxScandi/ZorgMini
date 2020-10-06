@@ -14,9 +14,8 @@ namespace ZorgMini
         static void Main(string[] args)
         {
             RunZorgMini();
-            
         }
-        TheNarrator narrator = new TheNarrator();
+        static TheNarrator narrator = new TheNarrator();
 
         static void RunZorgMini()
         {
@@ -30,14 +29,15 @@ namespace ZorgMini
         
         static void Storyteller()
         {
-            Console.WriteLine();
+            
+            Console.WriteLine(narrator.LookAtRoom());
             PlayerInput();
 
         }
 
         static void PlayerInput()
         {
-          
+            narrator.TellNarrator(Console.ReadLine());
 
 
         }
