@@ -11,7 +11,7 @@ namespace ZorgMini
 {
     public class TheNarrator
     {
-        private List<Item> Inventory { get; set; }
+        private List<Item> Inventory = new List<Item>();
 
         private int RoomTracker = 1;
 
@@ -22,11 +22,55 @@ namespace ZorgMini
             "LOOK", "HELP", "INVENTORY", "PICK UP"
         };
 
-        private Rooms room = new Rooms();
+        private List<Rooms> adventureMap = new List<Rooms>()
+        {
+            new Rooms() //first Room
+            {
+                RoomID = 1,
+
+                ItemsInRoom = new List<Item>()
+                {
+                   new Item("table", "wooden"),
+                   new Item("chair", "wooden"),
+                   new Item("KEY", "rusty", 14) {CanBePickedUp = true}
+                },
+
+                DoorsInRoom = new List<Doors>()
+                {
+                    new Doors(14, true, "NORTH", 2)
+                },
+
+
+                RoomDescription = "You are in a damp and low lit room made of stone."
+
+            }
+
+            //new Rooms() //second Room
+            //{
+            //    RoomID = 2,
+
+
+            //}
+
+        };
+
+        private Doors Getpath()
+        {
+            Doors path = new Doors();
+            
+            foreach (var door in GetRoom().DoorsInRoom)
+            {
+                if(door.Orientation == UserCommand[1])
+                {
+                    path = door;
+                }
+            }
+            return path;
+        }
 
         private Rooms GetRoom()
         {
-            return room.adventureMap[RoomTracker - 1];
+            return adventureMap[RoomTracker - 1];
         }
 
         public string TellNarrator(string userIn)
@@ -51,7 +95,7 @@ namespace ZorgMini
                     string inventory = "";
                     foreach (var item in Inventory)
                     {
-                        inventory += item + ", ";
+                        inventory += item.Description + ", " + item.Name + ' ';
                     }
                     narratorOut = inventory;
                     break;
@@ -62,15 +106,14 @@ namespace ZorgMini
                     break;
 
                 case "GO":
+                    Doors path = Getpath();
 
-                    Doors path = (Doors)GetRoom().DoorsInRoom.Where(x => x.Orientation == UserCommand[1]);
-
-                    if(path.Locked == false)
+                    if(path.Locked == false && path.Orientation != null)
                     {
                         RoomTracker = path.GoTo;
                         narratorOut = $"You go {UserCommand[1]}";
                     }
-                    else if(path.Locked == true)
+                    else if(path.Locked == true && path.Orientation != null)
                     {
                         narratorOut = "Ther's a locked door in your way.";
                     }
@@ -80,17 +123,18 @@ namespace ZorgMini
                     }
                     break;
 
-                case "PICK UP":
+                case "PICK":
+                    Item thing = GetRoom().ItemsInRoom.First(x => x.Name == UserCommand[3]
+                                              && x.Description.ToUpper() == UserCommand[2]);
 
-                    if (GetRoom().ItemsInRoom.Contains((Item)GetRoom().ItemsInRoom.Where(x => x.Name == UserCommand[2]
-                                                         && x.CanBePickedUp == true)))
+                    if(GetRoom().ItemsInRoom.Contains(thing) && thing.CanBePickedUp == true)
                     {
-                        Inventory.Add((Item)GetRoom().ItemsInRoom.Where(x => x.Name == UserCommand[2]));
-                        narratorOut = $"You pick up the {UserCommand[1]} {UserCommand[2]}.";
+                        Inventory.Add(thing);
+                        narratorOut = $"You pick up the {thing.Name}.";
                     }
                     else
                     {
-                        narratorOut = $"You cannot pick up the {UserCommand[1]} {UserCommand[2]}.";
+                        narratorOut = $"You can not pick up that. Beacuse of unknown reasons.";
                     }
                     break;
 
@@ -119,16 +163,25 @@ namespace ZorgMini
         public string LookAtRoom()
         {
             string whatYouSee;
-
             whatYouSee = GetRoom().RoomDescription + "\nAnd in this room you can see ";
 
             foreach (var item in GetRoom().ItemsInRoom)
             {
-                whatYouSee += item.Description + ' ';
-                whatYouSee += item.Name + '.';
+                whatYouSee += item.Description + ' ' + item.Name + " ,";
             }
 
             return whatYouSee;
+        }
+
+        public bool FinalRoom()
+        {
+            bool end = false;
+            if(RoomTracker > 8)
+            {
+                end = true;
+            }
+
+            return end;
         }
 
     }

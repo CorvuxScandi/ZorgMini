@@ -19,6 +19,11 @@ namespace ZorgMini
 
         public int GoTo { get; set; }
 
+        public Doors()
+        {
+
+        }
+
         public Doors(int doorID, bool locked, string orientation, int goTo)
         {
             DoorID = doorID;

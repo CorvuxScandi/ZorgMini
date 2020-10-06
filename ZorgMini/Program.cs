@@ -9,7 +9,7 @@ namespace ZorgMini
 {
     class Program
     {
-        static bool exitProgram = false;
+        static bool ExitProgram = false;
         
         static void Main(string[] args)
         {
@@ -19,9 +19,11 @@ namespace ZorgMini
 
         static void RunZorgMini()
         {
-            while (exitProgram != true)
+            Console.WriteLine(narrator.LookAtRoom());
+            while (ExitProgram != true)
             {
                 Storyteller();
+                
             }
             Console.WriteLine("\n\tPress any key to exit.");
             Console.ReadKey();
@@ -29,17 +31,9 @@ namespace ZorgMini
         
         static void Storyteller()
         {
-            
-            Console.WriteLine(narrator.LookAtRoom());
-            PlayerInput();
+            Console.WriteLine(narrator.TellNarrator(Console.ReadLine()));
 
-        }
-
-        static void PlayerInput()
-        {
-            narrator.TellNarrator(Console.ReadLine());
-
-
+            ExitProgram = narrator.FinalRoom();
         }
     }
 }
