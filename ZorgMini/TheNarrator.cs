@@ -11,67 +11,16 @@ namespace ZorgMini
 {
     public class TheNarrator
     {
-        private List<Item> Inventory = new List<Item>();
-
-        private int RoomTracker = 1;
-
-        private List<string> UserCommand { get; set; }
-
-        private List<string> Keywords = new List<string>()
+        public List<string> Keywords = new List<string>()
         {"GO", "WEST", "NORTH", "EAST", "SOUTH", "USE",
             "LOOK", "HELP", "INVENTORY", "PICK UP"
         };
 
-        private List<Rooms> adventureMap = new List<Rooms>()
-        {
-            new Rooms() //first Room
-            {
-                RoomID = 1,
+        private AdventureMap adventureMap = new AdventureMap();
 
-                ItemsInRoom = new List<Item>()
-                {
-                   new Item("table", "wooden"),
-                   new Item("chair", "wooden"),
-                   new Item("KEY", "rusty", 14) {CanBePickedUp = true}
-                },
+        private List<Item> Inventory = new List<Item>(); //Players invnetory
 
-                DoorsInRoom = new List<Doors>()
-                {
-                    new Doors(14, true, "NORTH", 2)
-                },
-
-
-                RoomDescription = "You are in a damp and low lit room made of stone."
-
-            }
-
-            //new Rooms() //second Room
-            //{
-            //    RoomID = 2,
-
-
-            //}
-
-        };
-
-        private Doors Getpath()
-        {
-            Doors path = new Doors();
-            
-            foreach (var door in GetRoom().DoorsInRoom)
-            {
-                if(door.Orientation == UserCommand[1])
-                {
-                    path = door;
-                }
-            }
-            return path;
-        }
-
-        private Rooms GetRoom()
-        {
-            return adventureMap[RoomTracker - 1];
-        }
+        private List<string> UserCommand { get; set; }
 
         public string TellNarrator(string userIn)
         {
@@ -97,6 +46,10 @@ namespace ZorgMini
                     {
                         inventory += item.Description + ", " + item.Name + ' ';
                     }
+                    if (inventory == "")
+                    {
+                        inventory = "Your inventory is empty.";
+                    }
                     narratorOut = inventory;
                     break;
 
@@ -110,7 +63,7 @@ namespace ZorgMini
 
                     if(path.Locked == false && path.Orientation != null)
                     {
-                        RoomTracker = path.GoTo;
+                        adventureMap.RoomTracker = path.GoTo;
                         narratorOut = $"You go {UserCommand[1]}";
                     }
                     else if(path.Locked == true && path.Orientation != null)
@@ -130,7 +83,7 @@ namespace ZorgMini
                     if(GetRoom().ItemsInRoom.Contains(thing) && thing.CanBePickedUp == true)
                     {
                         Inventory.Add(thing);
-                        narratorOut = $"You pick up the {thing.Name}.";
+                        narratorOut = $"You picked up a {thing.Description} {thing.Name.ToLower()}.";
                     }
                     else
                     {
@@ -142,22 +95,50 @@ namespace ZorgMini
 
                     if (UserCommand.Contains("KEY") && UserCommand.Contains("DOOR"))
                     {
-                        int key = Convert.ToInt32(Inventory.Where(x => x.Name == "KEY" && x.Description == UserCommand[1])
-                                                           .Select(x => x.ItemID));
-                        int door = Convert.ToInt32(GetRoom().DoorsInRoom.Where(x => x.Orientation == UserCommand[4])
-                            .Select(x => x.DoorID));
+                        int key = Inventory.FirstOrDefault(x => x.Name == "KEY" && x.Description.ToUpper() == UserCommand[1]).CanBeUsedOn;
 
+                        int door = GetRoom().DoorsInRoom.FirstOrDefault(x => x.Orientation == UserCommand[4]).DoorID;
+                            
                         if (key == door)
                         {
-                            Doors locked = (Doors)GetRoom().DoorsInRoom.Where(x => x.DoorID == door);
-                            locked.Locked = false;
-                            narratorOut = $"You unlocked the {UserCommand[3]} door.";
+                            GetRoom().DoorsInRoom.First(x => x.DoorID == door).Locked = false;
+                           
+                            narratorOut = $"You unlocked the {UserCommand[4].ToLower()} door.";
                         }
+                        else
+                        {
+                            narratorOut = "That key wont fit.";
+                        }
+                    }
+                    else
+                    {
+                        narratorOut = "You want to use what on what?";
                     }
                     break;
             }
 
             return narratorOut;
+        }
+
+        public Rooms GetRoom()
+        {
+            Rooms room = adventureMap.map[adventureMap.RoomTracker - 1];
+
+            return room;
+        }
+
+        private Doors Getpath()
+        {
+            Doors path = new Doors();
+
+            foreach (var door in GetRoom().DoorsInRoom)
+            {
+                if (door.Orientation == UserCommand[1])
+                {
+                    path = door;
+                }
+            }
+            return path;
         }
 
         public string LookAtRoom()
@@ -176,7 +157,7 @@ namespace ZorgMini
         public bool FinalRoom()
         {
             bool end = false;
-            if(RoomTracker > 8)
+            if (adventureMap.RoomTracker > 8)
             {
                 end = true;
             }
