@@ -42,9 +42,9 @@ namespace ZorgMini
 
                 case "INVENTORY":
                     string inventory = "";
-                    foreach (var item in Inventory)
+                    foreach (var inventoryItem in Inventory)
                     {
-                        inventory += item.Description + ", " + item.Name + ' ';
+                        inventory += inventoryItem.Description + ", " + inventoryItem.Name + ' ';
                     }
                     if (inventory == "")
                     {
@@ -54,19 +54,19 @@ namespace ZorgMini
                     break;
 
                 case "LOOK":
-                   
+
                     narratorOut = LookAtRoom();
                     break;
 
                 case "GO":
                     Doors path = Getpath();
 
-                    if(path.Locked == false && path.Orientation != null)
+                    if (path.Locked == false && path.Orientation != null)
                     {
                         adventureMap.RoomTracker = path.GoTo;
                         narratorOut = $"You go {UserCommand[1]}";
                     }
-                    else if(path.Locked == true && path.Orientation != null)
+                    else if (path.Locked == true && path.Orientation != null)
                     {
                         narratorOut = "Ther's a locked door in your way.";
                     }
@@ -80,9 +80,10 @@ namespace ZorgMini
                     Item thing = GetRoom().ItemsInRoom.First(x => x.Name == UserCommand[3]
                                               && x.Description.ToUpper() == UserCommand[2]);
 
-                    if(GetRoom().ItemsInRoom.Contains(thing) && thing.CanBePickedUp == true)
+                    if (GetRoom().ItemsInRoom.Contains(thing) && thing.CanBePickedUp == true)
                     {
                         Inventory.Add(thing);
+                        adventureMap.map.First(r => r.RoomID == GetRoom().RoomID).ItemsInRoom.Remove(thing);
                         narratorOut = $"You picked up a {thing.Description} {thing.Name.ToLower()}.";
                     }
                     else
@@ -93,26 +94,53 @@ namespace ZorgMini
 
                 case "USE":
 
-                    if (UserCommand.Contains("KEY") && UserCommand.Contains("DOOR"))
-                    {
-                        int key = Inventory.FirstOrDefault(x => x.Name == "KEY" && x.Description.ToUpper() == UserCommand[1]).CanBeUsedOn;
+                    Item item = null;
 
-                        int door = GetRoom().DoorsInRoom.FirstOrDefault(x => x.Orientation == UserCommand[4]).DoorID;
-                            
-                        if (key == door)
-                        {
-                            GetRoom().DoorsInRoom.First(x => x.DoorID == door).Locked = false;
-                           
-                            narratorOut = $"You unlocked the {UserCommand[4].ToLower()} door.";
-                        }
-                        else
-                        {
-                            narratorOut = "That key wont fit.";
-                        }
+                   if(Inventory.Contains((Item)Inventory.Where(i => i.Description == UserCommand[1] && i.Name == UserCommand[2])))
+                    {
+                        item = Inventory.FirstOrDefault(i => i.Description == UserCommand[1] && i.Name == UserCommand[2]);
+                    }
+                   else if(GetRoom().ItemsInRoom.Contains((Item)GetRoom().ItemsInRoom.Where(i => i.Description == UserCommand[1] && i.Name == UserCommand[2])))
+                    {
+                        item = GetRoom().ItemsInRoom.FirstOrDefault(i => i.Description == UserCommand[1] && i.Name == UserCommand[2]);
                     }
                     else
                     {
-                        narratorOut = "You want to use what on what?";
+                        narratorOut = "There's no such item in your pocket.";
+                        break;
+                    }
+
+                    Item item2 = null;
+                    Doors door = null;
+
+                    if (Inventory.Contains((Item)Inventory.Where(i => i.Description == UserCommand[1] && i.Name == UserCommand[2])))
+                    {
+                        item2 = Inventory.FirstOrDefault(i => i.Description == UserCommand[1] && i.Name == UserCommand[2]);
+                    }
+                    else if (GetRoom().ItemsInRoom.Contains((Item)GetRoom().ItemsInRoom.Where(i => i.Description == UserCommand[1] && i.Name == UserCommand[2])))
+                    {
+                        item2 = GetRoom().ItemsInRoom.FirstOrDefault(i => i.Description == UserCommand[1] && i.Name == UserCommand[2]);
+                    }
+                    else if (GetRoom().DoorsInRoom.Contains((Doors)GetRoom().DoorsInRoom.Where(d => d.Orientation == UserCommand[4])))
+                    {
+                        door = GetRoom().DoorsInRoom.FirstOrDefault(d => d.Orientation == UserCommand[4]);
+
+                    }
+                    else 
+                    {
+                        narratorOut = "You stumble in confution and fail to complete your task. Be more clear to yourself on what you want to do.";
+                    }
+
+
+                    if (item.CanBeUsedOn == door.DoorID)
+                    {
+                        Inventory.Remove(item);
+                        adventureMap.map.First(r => r.DoorsInRoom == GetRoom().DoorsInRoom).DoorsInRoom.First(d => d.DoorID == door.DoorID).Locked = false;
+                        narratorOut = "The key fits and you open the door.";
+                    }
+                    else if(item.CanBeUsedOn == item2.ItemID)
+                    {
+                        adventureMap.ItemInteraction(item, item2);
                     }
                     break;
             }
@@ -166,5 +194,5 @@ namespace ZorgMini
         }
 
     }
-        
+
 }

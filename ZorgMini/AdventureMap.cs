@@ -20,20 +20,39 @@ namespace ZorgMini
                 {
                    new Item("table", "wooden"),
                    new Item("chair", "wooden"),
-                   new Item("KEY", "rusty", 14) {CanBePickedUp = true}
+                   new Item("KEY", "rusty", 10) {CanBePickedUp = true}
                 },
 
                 DoorsInRoom = new List<Doors>()
                 {
-                    new Doors(14, true, "NORTH", 2)
+                    new Doors(10, true, "NORTH", 2)
                 },
-
-
                 RoomDescription = "You are in a damp and low lit room made of stone."
 
+            },
+            new Rooms()
+            {
+                RoomID = 2,
+
+                ItemsInRoom = new List<Item>()
+                {
+                    new Item("Key", "metal", 15),
+                    //new Item()
+                }
             }
         };
 
+        public Item ItemInteraction(Item item1, Item item2)
+        {
 
+            switch (item2)
+            {
+                case map
+            }
+
+                
+
+
+        }
     }
 }
