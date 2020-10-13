@@ -6,12 +6,12 @@ namespace ZorgMini
 {
     public class TheNarrator            //Class wich keep track on the player, 
     {
-        private List<string> Keywords = new List<string>()
+        private List<string> Keywords = new List<string>()  //A somple list of valid user command
         {"GO", "WEST", "NORTH", "EAST", "SOUTH", "USE",
             "LOOK", "HELP", "INVENTORY", "PICK UP"
         };
 
-        private AdventureMap adventureMap = new AdventureMap();
+        private AdventureMap adventureMap = new AdventureMap(); //Creates a new instance of the world map
 
         private List<Item> Inventory = new List<Item>();    //Player invnetory
 
@@ -20,11 +20,11 @@ namespace ZorgMini
         public string TellNarrator(string userIn)           //Cuts up the user input for easier handeling
         {
             UserCommand = userIn.ToUpper().Split(' ').ToList();
-            string narratorOut = "\n\tUnknown command! Type \"help\" if you want some keywords to use.";
-
-            switch (UserCommand[0])
+            string narratorOut = "\n\tUnknown command! Type \"help\" if you want some keywords to use."; //Base string if user input doesn't match with any of the conditions
+                                                                                                         //Will be overwritten if condition are met
+            switch (UserCommand[0])         //Handels the different reactions depending on user input
             {
-                case "HELP":
+                case "HELP":        //Writes out the list of keywords
 
                     string userKeywords = "\n\t";
                     foreach (var word in Keywords)
@@ -35,7 +35,7 @@ namespace ZorgMini
                     narratorOut = userKeywords + "\n";
                     break;
 
-                case "INVENTORY":
+                case "INVENTORY":       //Writes out the player inventory both Item name and description
                     string inventory = "";
                     foreach (var item1 in Inventory)
                     {
@@ -50,13 +50,13 @@ namespace ZorgMini
 
                 case "LOOK":
 
-                    narratorOut = LookAtRoom() + "\n";
+                    narratorOut = LookAtRoom() + "\n"; //Calls on the method that describes the room that the player occupies
                     break;
 
-                case "GO":
+                case "GO":     
                     Door path = GetRoom().DoorsInRoom.FirstOrDefault(d => d.Orientation.ToUpper() == UserCommand[1]);
 
-                    if (path.Locked == false && path != null)
+                    if (path.Locked == false && path != null)           //Checks if the player have a free path to the next room and changes the roomtracker accordently
                     {
                         adventureMap.RoomTracker = path.GoTo;
                         narratorOut = $"\n\tYou go {UserCommand[1]}" + "\n";
@@ -73,7 +73,7 @@ namespace ZorgMini
                     break;
 
                 case "PICK": //"UP"
-                    Item thing = GetRoom().ItemsInRoom.FirstOrDefault(x => x.Name.ToUpper() == UserCommand[3]
+                    Item thing = GetRoom().ItemsInRoom.FirstOrDefault(x => x.Name.ToUpper() == UserCommand[3]       //adds a valid item to the user inventory
                                               && x.Description.ToUpper() == UserCommand[2]);
 
                     if (GetRoom().ItemsInRoom.Contains(thing) && thing.CanBePickedUp == true)
@@ -88,10 +88,10 @@ namespace ZorgMini
                     }
                     break;
 
-                case "USE":
+                case "USE":         //Checks if the user can and/or have items that they can use or interact with
                     if (UserCommand.Count < 6) { narratorOut = "You couldn't decide what you wanted to do."; break; }
 
-                    Item item = null;
+                    Item item = null;       //Looks for the first item the user describes
 
                     if (Inventory.Contains(Inventory.FirstOrDefault(i => i.Description.ToUpper() == UserCommand[1] && i.Name.ToUpper() == UserCommand[2])))
                     {
@@ -111,8 +111,8 @@ namespace ZorgMini
                     Item roomItem = GetRoom().ItemsInRoom.FirstOrDefault(i => i.Description.ToUpper() == UserCommand[4] && i.Name.ToUpper() == UserCommand[5]);
                     Door door = door = GetRoom().DoorsInRoom.FirstOrDefault(d => d.Orientation.ToUpper() == UserCommand[4]);
 
-                    if (door != null && item.CanBeUsedOn == door.DoorID)
-                    {
+                    if (door != null && item.CanBeUsedOn == door.DoorID)        //looks for the second item or door the user wants to interact with
+                    {                                                           //Also filters out any null values that may break the application
                         Inventory.Remove(item);
                         adventureMap.map.FirstOrDefault(r => r.DoorsInRoom == GetRoom().DoorsInRoom).DoorsInRoom.FirstOrDefault(d => d.DoorID == door.DoorID).Locked = false;
                         narratorOut = "\n\tThe key fits and you open the door.";
