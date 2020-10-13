@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Data;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-
 
 namespace ZorgMini
 {
     public class TheNarrator
     {
-        public List<string> Keywords = new List<string>()
+        private List<string> Keywords = new List<string>()
         {"GO", "WEST", "NORTH", "EAST", "SOUTH", "USE",
             "LOOK", "HELP", "INVENTORY", "PICK UP"
         };
@@ -38,9 +37,9 @@ namespace ZorgMini
 
                 case "INVENTORY":
                     string inventory = "";
-                    foreach (var inventoryItem in Inventory)
+                    foreach (var item1 in Inventory)
                     {
-                        inventory += inventoryItem.Description + ' ' + inventoryItem.Name + " , ";
+                        inventory += item1.Description + ' ' + item1.Name + " , ";
                     }
                     if (inventory == "")
                     {
@@ -55,16 +54,17 @@ namespace ZorgMini
                     break;
 
                 case "GO":
-                    Door path = Getpath();
+                    Door path = GetRoom().DoorsInRoom.FirstOrDefault(d => d.Orientation.ToUpper() == UserCommand[1]);
 
-                    if (path.Locked == false && path.Orientation != null)
+                    if (path.Locked == false && path != null)
                     {
                         adventureMap.RoomTracker = path.GoTo;
                         narratorOut = $"\n\tYou go {UserCommand[1]}" + "\n";
+                        narratorOut += "\n\t" + LookAtRoom();
                     }
                     else if (path.Locked == true && path.Orientation != null)
                     {
-                        narratorOut = "\n\tTher's a locked door in your way." + "\n";
+                        narratorOut = "\n\tThere's a locked door in your way." + "\n";
                     }
                     else
                     {
@@ -72,8 +72,8 @@ namespace ZorgMini
                     }
                     break;
 
-                case "PICK":
-                    Item thing = GetRoom().ItemsInRoom.FirstOrDefault(x => x.Name == UserCommand[3]
+                case "PICK": //"UP"
+                    Item thing = GetRoom().ItemsInRoom.FirstOrDefault(x => x.Name.ToUpper() == UserCommand[3]
                                               && x.Description.ToUpper() == UserCommand[2]);
 
                     if (GetRoom().ItemsInRoom.Contains(thing) && thing.CanBePickedUp == true)
@@ -87,92 +87,54 @@ namespace ZorgMini
                         narratorOut = "\n\tYou can't pick up that. Beacuse of unknown reasons.";
                     }
                     break;
-                    
+
                 case "USE":
+                    if (UserCommand.Count < 6) { narratorOut = "You couldn't decide what you wanted to do."; break; }
 
                     Item item = null;
 
-                    if (Inventory.Contains(Inventory.FirstOrDefault(i => i.Description == UserCommand[1] && i.Name == UserCommand[2])))
+                    if (Inventory.Contains(Inventory.FirstOrDefault(i => i.Description.ToUpper() == UserCommand[1] && i.Name.ToUpper() == UserCommand[2])))
                     {
-                        item = Inventory.FirstOrDefault(i => i.Description == UserCommand[1] && i.Name == UserCommand[2]);
+                        item = Inventory.FirstOrDefault(i => i.Description.ToUpper() == UserCommand[1] && i.Name.ToUpper() == UserCommand[2]);
                     }
-                    else if (GetRoom().ItemsInRoom.Contains(GetRoom().ItemsInRoom.FirstOrDefault(i => i.Description == UserCommand[1] && i.Name == UserCommand[2])))
+                    else if (GetRoom().ItemsInRoom.Contains(GetRoom().ItemsInRoom.FirstOrDefault(i => i.Description.ToUpper() == UserCommand[1] && i.Name.ToUpper() == UserCommand[2])))
                     {
-                        item = GetRoom().ItemsInRoom.FirstOrDefault(i => i.Description == UserCommand[1] && i.Name == UserCommand[2]);
+                        item = GetRoom().ItemsInRoom.FirstOrDefault(i => i.Description.ToUpper() == UserCommand[1] && i.Name.ToUpper() == UserCommand[2]);
                     }
-                    else
+                    else if (item == null)
                     {
                         narratorOut = "\n\tThere's no such item in your pocket.";
                         break;
                     }
-                    
-                    Item item2 = null;
-                    Door door = null;
 
-                    if (Inventory.Contains(Inventory.FirstOrDefault(i => i.Description == UserCommand[1] && i.Name == UserCommand[2])))
-                    {
-                        item2 = Inventory.FirstOrDefault(i => i.Description == UserCommand[1] && i.Name == UserCommand[2]);
-                    }
-                    else if (GetRoom().ItemsInRoom.Contains(GetRoom().ItemsInRoom.FirstOrDefault(i => i.Description == UserCommand[1] && i.Name == UserCommand[2])))
-                    {
-                        item2 = GetRoom().ItemsInRoom.FirstOrDefault(i => i.Description == UserCommand[1] && i.Name == UserCommand[2]);
-                    }
-                    else if (GetRoom().DoorsInRoom.Contains(GetRoom().DoorsInRoom.FirstOrDefault(d => d.Orientation == UserCommand[4])))
-                    {
-                        door = GetRoom().DoorsInRoom.FirstOrDefault(d => d.Orientation == UserCommand[4]);
+                    Item inventoryItem = Inventory.FirstOrDefault(i => i.Description.ToUpper() == UserCommand[1] && i.Name.ToUpper() == UserCommand[2]);
+                    Item roomItem = GetRoom().ItemsInRoom.FirstOrDefault(i => i.Description.ToUpper() == UserCommand[4] && i.Name.ToUpper() == UserCommand[5]);
+                    Door door = door = GetRoom().DoorsInRoom.FirstOrDefault(d => d.Orientation.ToUpper() == UserCommand[4]);
 
-                    }
-                    else
-                    {
-                        narratorOut = "You stumble in confution and fail to complete your task. Be more clear to yourself on what you want to do.";
-                    }
-
-
-                    if (item.CanBeUsedOn == door.DoorID)
+                    if (door != null && item.CanBeUsedOn == door.DoorID)
                     {
                         Inventory.Remove(item);
                         adventureMap.map.FirstOrDefault(r => r.DoorsInRoom == GetRoom().DoorsInRoom).DoorsInRoom.FirstOrDefault(d => d.DoorID == door.DoorID).Locked = false;
                         narratorOut = "\n\tThe key fits and you open the door.";
                     }
-                    else if (item.CanBeUsedOn == item2.ItemID)
+                    else if (inventoryItem != null || roomItem != null)
                     {
-                        switch (item2.ItemID)
-                        {
-                            case 20:
-                                Inventory.Remove(item);
-                                Inventory.Remove(item2);
-                                Inventory.Add(adventureMap.NonRoomItem.FirstOrDefault(i => i.ItemID == 30));
-                                Inventory.Add(adventureMap.NonRoomItem.FirstOrDefault(i => i.ItemID == 40));
-                                narratorOut = "\n\tYou open the box and inside it you see laying on a satin pillow, a golden key.";
-                                break;
-                        }
+                        narratorOut = ItemInteraction(inventoryItem, roomItem, item);
+                    }
+                    else
+                    {
+                        narratorOut = "You stumble in confution and fail to complete your task. Be more clear to yourself on what you want to do.";
+
                     }
                     break;
             }
-
             return narratorOut;
         }
 
-        public Room GetRoom()
+        private Room GetRoom()
         {
             Room room = adventureMap.map[adventureMap.RoomTracker - 1];
-
-
             return room;
-        }
-
-        private Door Getpath()
-        {
-            Door path = new Door();
-
-            foreach (var door in GetRoom().DoorsInRoom)
-            {
-                if (door.Orientation == UserCommand[1])
-                {
-                    path = door;
-                }
-            }
-            return path;
         }
 
         public string LookAtRoom()
@@ -180,28 +142,80 @@ namespace ZorgMini
             string whatYouSee;
             whatYouSee = "\n\t" + GetRoom().RoomDescription + "\n\tYou see ";
 
-            foreach (var item in GetRoom().ItemsInRoom)
+            if (GetRoom().ItemsInRoom != null && GetRoom().DoorsInRoom != null)
             {
-                whatYouSee += item.Description + ' ' + item.Name + " , ";
+                foreach (var item in GetRoom().ItemsInRoom)
+                {
+                    whatYouSee += item.Description + ' ' + item.Name + " , ";
+                }
+                whatYouSee += "\n\t";
+                foreach (var door in GetRoom().DoorsInRoom)
+                {
+                    whatYouSee += "a door to the " + door.Orientation + " , ";
+                }
             }
-            whatYouSee += "\n\t";
-            foreach (var door in GetRoom().DoorsInRoom)
-            {
-                whatYouSee += "a door to the " + door.Orientation + " , ";
-            }
+
             return whatYouSee;
         }
 
         public bool FinalRoom()
         {
+            string answer;
             bool end = false;
+            bool loop = true;
+
             if (adventureMap.RoomTracker > 3)
             {
-                end = true;
+                while (loop == true)
+                {
+                    Console.WriteLine("Do you want to continue? Y/N");
+                    answer = Console.ReadLine().ToUpper();
+                    if (answer == "N")
+                    {
+                        loop = false;
+                        end = true;
+                    }
+                    else if (answer != "Y")
+                    {
+                        Console.WriteLine("Unknown Command.");
+                    }
+                    else
+                    {
+                        loop = false;
+                    }
+
+                }
+
             }
+
             return end;
         }
 
-    }
+        private string ItemInteraction(Item inventoryItem, Item roomItem, Item item1)
+        {
+            string result = "";
+            Item trial;
+            if (inventoryItem != null)
+            {
+                trial = inventoryItem;
+            }
+            else
+            {
+                trial = roomItem;
+            }
 
+            switch (trial.ItemID)
+            {
+                case 20:
+                    Inventory.Remove(item1);
+                    Inventory.Remove(trial);
+                    Inventory.Add(adventureMap.NonRoomItem.FirstOrDefault(i => i.ItemID == 30));
+                    Inventory.Add(adventureMap.NonRoomItem.FirstOrDefault(i => i.ItemID == 40));
+                    result = "\n\tYou open the box and inside it you see laying on a satin pillow, a golden key.";
+                    break;
+            }
+
+            return result;
+        }
+    }
 }

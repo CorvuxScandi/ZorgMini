@@ -1,7 +1,5 @@
 ﻿namespace ZorgMini
 {
-
-
     public class Door
     {
 

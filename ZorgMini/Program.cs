@@ -7,12 +7,16 @@ namespace ZorgMini
     {
         static bool ExitProgram = false;
 
-
-
         static void Main(string[] args)
         {
-            RunZorgMini();
-
+            try
+            {
+                RunZorgMini();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }       
         }
         static TheNarrator narrator = new TheNarrator();
 
@@ -21,19 +25,13 @@ namespace ZorgMini
             Console.WriteLine(narrator.LookAtRoom());
             while (ExitProgram != true)
             {
-                Storyteller();
+                Console.WriteLine(narrator.TellNarrator(Console.ReadLine()));
+
+                ExitProgram = narrator.FinalRoom();
 
             }
             Console.WriteLine("\n\tPress any key to exit.");
             Console.ReadKey();
-        }
-
-        static void Storyteller()
-        {
-
-            Console.WriteLine(narrator.TellNarrator(Console.ReadLine()));
-
-            ExitProgram = narrator.FinalRoom();
         }
     }
 }

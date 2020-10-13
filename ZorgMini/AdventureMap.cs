@@ -51,8 +51,8 @@ namespace ZorgMini
                     new Door(12, false, "East", 3)
                 },
 
-                RoomDescription = "You are in a dusty old room, " +
-                "each wall is coverd in bookshelves." + "You have a corridor to the south and a door to the east." + "A warm ligth shines from the sealing. "
+                RoomDescription = "You are in a dusty old room.\n\t" +
+                "Each wall is coverd in bookshelves. And a warm ligth shines from the sealing. "
             },
             new Room()
             {
@@ -72,7 +72,7 @@ namespace ZorgMini
             new Room()
             {
                 RoomID = 4,
-                RoomDescription = "You open your eyes and the first mornings rays lights up the sealing in your bedroom." + "\n Congratulations you made it to the end. Do you want to try again Y/N?"
+                RoomDescription = "You open your eyes and the first mornings rays lights up the sealing in your bedroom." + "\n Congratulations you made it to the end. Do you want to try again?"
             },
             new Room()
             {
