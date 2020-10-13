@@ -2,7 +2,7 @@
 
 namespace ZorgMini
 {
-    public class Room
+    public class Room    //Make each room as its own object
     {
 
         internal int RoomID { get; set; }

@@ -1,8 +1,7 @@
 ﻿namespace ZorgMini
 {
-    public class Door
+    public class Door                   //Sets the different properties for the door object class
     {
-
         public int DoorID { get; set; }
 
         public bool Locked { get; set; }

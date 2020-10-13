@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ZorgMini
 {
-    public class TheNarrator
+    public class TheNarrator            //Class wich keep track on the player, 
     {
         private List<string> Keywords = new List<string>()
         {"GO", "WEST", "NORTH", "EAST", "SOUTH", "USE",
@@ -13,11 +13,11 @@ namespace ZorgMini
 
         private AdventureMap adventureMap = new AdventureMap();
 
-        private List<Item> Inventory = new List<Item>(); //Players invnetory
+        private List<Item> Inventory = new List<Item>();    //Player invnetory
 
-        private List<string> UserCommand { get; set; }
+        private List<string> UserCommand { get; set; }      
 
-        public string TellNarrator(string userIn)
+        public string TellNarrator(string userIn)           //Cuts up the user input for easier handeling
         {
             UserCommand = userIn.ToUpper().Split(' ').ToList();
             string narratorOut = "\n\tUnknown command! Type \"help\" if you want some keywords to use.";
@@ -131,18 +131,18 @@ namespace ZorgMini
             return narratorOut;
         }
 
-        private Room GetRoom()
+        private Room GetRoom() //Returns the room the player is currently in
         {
             Room room = adventureMap.map[adventureMap.RoomTracker - 1];
             return room;
         }
 
-        public string LookAtRoom()
+        public string LookAtRoom() //Gets the descriptions, items and doors in the room the player occupies
         {
             string whatYouSee;
             whatYouSee = "\n\t" + GetRoom().RoomDescription + "\n\tYou see ";
 
-            if (GetRoom().ItemsInRoom != null && GetRoom().DoorsInRoom != null)
+            if (GetRoom().ItemsInRoom != null && GetRoom().DoorsInRoom != null)     //Constructs sentenses describing a room
             {
                 foreach (var item in GetRoom().ItemsInRoom)
                 {
@@ -158,7 +158,7 @@ namespace ZorgMini
             return whatYouSee;
         }
 
-        public bool FinalRoom()
+        public bool FinalRoom()         //checks if the player has reached one of the victory rooms
         {
             string answer;
             bool end = false;
@@ -168,7 +168,7 @@ namespace ZorgMini
             {
                 while (loop == true)
                 {
-                    Console.WriteLine("Do you want to continue? Y/N");
+                    Console.WriteLine("Do you want to continue? Y/N");      //Writes up a dilague asking player if they wants to play again. 
                     answer = Console.ReadLine().ToUpper();
                     if (answer == "N")
                     {
@@ -190,8 +190,8 @@ namespace ZorgMini
 
             return end;
         }
-
-        private string ItemInteraction(Item inventoryItem, Item roomItem, Item item1)
+        
+        private string ItemInteraction(Item inventoryItem, Item roomItem, Item item1)       //Returns the result of a event or interaction between two different items
         {
             string result = "";
             Item trial;
@@ -206,7 +206,7 @@ namespace ZorgMini
 
             switch (trial.ItemID)
             {
-                case 20:
+                case 20:            //Removes a key and a box and puts in a new key and opend box into user inventory
                     Inventory.Remove(item1);
                     Inventory.Remove(trial);
                     Inventory.Add(adventureMap.NonRoomItem.FirstOrDefault(i => i.ItemID == 30));

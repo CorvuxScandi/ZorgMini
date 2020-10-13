@@ -1,6 +1,6 @@
 ﻿namespace ZorgMini
 {
-    public class Item
+    public class Item       //Sets the different properties for the item bject class
     {
         public int ItemID { get; set; }
 

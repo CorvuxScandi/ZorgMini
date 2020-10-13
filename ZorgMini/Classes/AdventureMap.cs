@@ -2,17 +2,17 @@
 
 namespace ZorgMini
 {
-    public class AdventureMap
+    public class AdventureMap               //Populates the world map with room
     {
-        public int RoomTracker = 1;
+        public int RoomTracker = 1;         //Value symbolizes in what room the player occupies
 
         public List<Item> NonRoomItem = new List<Item>()
         {
             new Item("Key", "golden", 15){CanBePickedUp = true, ItemID = 40 },
             new Item("Box", "opend"){ItemID = 30}
-        };
+        }; //List of items that doesnt originate in a room
 
-        public List<Room> map = new List<Room>()
+        public List<Room> map = new List<Room>()            //Create an instans of rooms and populates them with items and doors/ pathways
         {
             new Room() //first Room
             {
@@ -34,7 +34,7 @@ namespace ZorgMini
                 RoomDescription = "You find yourself in a stone room"
 
             },
-            new Room()
+            new Room()  //second room
             {
                 RoomID = 2,
 
@@ -54,7 +54,7 @@ namespace ZorgMini
                 RoomDescription = "You are in a dusty old room.\n\t" +
                 "Each wall is coverd in bookshelves. And a warm ligth shines from the sealing. "
             },
-            new Room()
+            new Room() //Third room
             {
                 RoomID = 3,
                 DoorsInRoom = new List<Door>()
@@ -69,12 +69,12 @@ namespace ZorgMini
                     new Item("Key", "Silver",20){CanBePickedUp = true}
                 }
             },
-            new Room()
+            new Room() //Fourth room with the first victory condidtion
             {
                 RoomID = 4,
                 RoomDescription = "You open your eyes and the first mornings rays lights up the sealing in your bedroom." + "\n Congratulations you made it to the end. Do you want to try again?"
             },
-            new Room()
+            new Room()      //fith and final end room
             {
                 RoomID = 5,
                 RoomDescription = "Congratulations! You've won my game" +
