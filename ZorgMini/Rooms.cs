@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ZorgMini
 {
-    public class Rooms
+    public class Room
     {
 
         internal int RoomID { get; set; }
 
-        public List<Doors> DoorsInRoom;
+        public List<Door> DoorsInRoom;
 
         public List<Item> ItemsInRoom;
 

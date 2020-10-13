@@ -1,30 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ZorgMini
+﻿namespace ZorgMini
 {
-    
 
-    public class Doors
+
+    public class Door
     {
 
         public int DoorID { get; set; }
-        
+
         public bool Locked { get; set; }
 
         public string Orientation { set; get; }
 
         public int GoTo { get; set; }
 
-        public Doors()
-        {
+        public Door() { }
 
-        }
-
-        public Doors(int doorID, bool locked, string orientation, int goTo)
+        public Door(int doorID, bool locked, string orientation, int goTo)
         {
             DoorID = doorID;
             Locked = locked;
