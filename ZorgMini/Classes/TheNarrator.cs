@@ -8,14 +8,14 @@ namespace ZorgMini
     {
         private List<string> Keywords = new List<string>()  //A somple list of valid user command
         {"GO", "WEST", "NORTH", "EAST", "SOUTH", "USE",
-            "LOOK", "HELP", "INVENTORY", "PICK UP", "Drop"
+            "LOOK", "HELP", "INVENTORY", "PICK UP", "DROP"
         };
 
         private AdventureMap adventureMap = new AdventureMap(); //Creates a new instance of the world map
 
         private List<Item> Inventory = new List<Item>();    //Player invnetory
 
-        private List<string> UserCommand { get; set; }      
+        private List<string> UserCommand { get; set; }
 
         public string TellNarrator(string userIn)           //Cuts up the user input for easier handeling
         {
@@ -53,7 +53,7 @@ namespace ZorgMini
                     narratorOut = LookAtRoom() + "\n"; //Calls on the method that describes the room that the player occupies
                     break;
 
-                case "GO":     
+                case "GO":
                     Door path = GetRoom().DoorsInRoom.FirstOrDefault(d => d.Orientation.ToUpper() == UserCommand[1]);
 
                     if (path != null)
@@ -67,7 +67,7 @@ namespace ZorgMini
                         else if (path.Locked == true)
                         {
                             narratorOut = "\n\tNuts! There's a locked door in your way." + "\n";
-                        } 
+                        }
                     }
                     else
                     {
@@ -132,7 +132,7 @@ namespace ZorgMini
                     break;
 
                 case "DROP":            //Removes item from inventory and add it to the room the player currently occupies.
-                        Item itemToDrop = Inventory.FirstOrDefault(i => i.Description.ToUpper() == UserCommand[1] && i.Name.ToUpper() == UserCommand[2]);   
+                    Item itemToDrop = Inventory.FirstOrDefault(i => i.Description.ToUpper() == UserCommand[1] && i.Name.ToUpper() == UserCommand[2]);
                     Inventory.Remove(itemToDrop);
                     GetRoom().ItemsInRoom.Add(itemToDrop);
                     narratorOut = $"You find your pockes a bit too heavy so you take out and toss the {itemToDrop.Description} {itemToDrop.Name}";
@@ -200,7 +200,7 @@ namespace ZorgMini
 
             return end;
         }
-        
+
         private string ItemInteraction(Item inventoryItem, Item roomItem, Item item1)       //Returns the result of a event or interaction between two different items
         {
             string result = "";
