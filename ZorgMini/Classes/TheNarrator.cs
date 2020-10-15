@@ -8,7 +8,7 @@ namespace ZorgMini
     {
         private List<string> Keywords = new List<string>()  //A somple list of valid user command
         {"GO", "WEST", "NORTH", "EAST", "SOUTH", "USE",
-            "LOOK", "HELP", "INVENTORY", "PICK UP"
+            "LOOK", "HELP", "INVENTORY", "PICK UP", "Drop"
         };
 
         private AdventureMap adventureMap = new AdventureMap(); //Creates a new instance of the world map
@@ -56,15 +56,20 @@ namespace ZorgMini
                 case "GO":     
                     Door path = GetRoom().DoorsInRoom.FirstOrDefault(d => d.Orientation.ToUpper() == UserCommand[1]);
 
-                    if (path.Locked == false && path != null)           //Checks if the player have a free path to the next room and changes the roomtracker accordently
+
+
+                    if (path != null)
                     {
-                        adventureMap.RoomTracker = path.GoTo;
-                        narratorOut = $"\n\tYou go {UserCommand[1]}" + "\n";
-                        narratorOut += "\n\t" + LookAtRoom();
-                    }
-                    else if (path.Locked == true && path.Orientation != null)
-                    {
-                        narratorOut = "\n\tThere's a locked door in your way." + "\n";
+                        if (path.Locked == false)           //Checks if the player have a free path to the next room and changes the roomtracker accordently
+                        {
+                            adventureMap.RoomTracker = path.GoTo;
+                            narratorOut = $"\n\tYou go {UserCommand[1]}" + "\n";
+                            narratorOut += "\n\t" + LookAtRoom();
+                        }
+                        else if (path.Locked == true)
+                        {
+                            narratorOut = "\n\tThere's a locked door in your way." + "\n";
+                        } 
                     }
                     else
                     {
@@ -126,6 +131,13 @@ namespace ZorgMini
                         narratorOut = "You stumble in confution and fail to complete your task. Be more clear to yourself on what you want to do.";
 
                     }
+                    break;
+
+                case "DROP":            //Removes item from inventory and add it to the room the player currently occupies.
+                        Item itemToDrop = Inventory.FirstOrDefault(i => i.Description.ToUpper() == UserCommand[1] && i.Name.ToUpper() == UserCommand[2]);   
+                    Inventory.Remove(itemToDrop);
+                    GetRoom().ItemsInRoom.Add(itemToDrop);
+                    narratorOut = $"You find your pockes a bit too heavy so you take out and toss the {itemToDrop.Description} {itemToDrop.Name}";
                     break;
             }
             return narratorOut;
