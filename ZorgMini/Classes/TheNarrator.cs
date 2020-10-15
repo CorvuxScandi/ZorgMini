@@ -56,8 +56,6 @@ namespace ZorgMini
                 case "GO":     
                     Door path = GetRoom().DoorsInRoom.FirstOrDefault(d => d.Orientation.ToUpper() == UserCommand[1]);
 
-
-
                     if (path != null)
                     {
                         if (path.Locked == false)           //Checks if the player have a free path to the next room and changes the roomtracker accordently
@@ -68,12 +66,12 @@ namespace ZorgMini
                         }
                         else if (path.Locked == true)
                         {
-                            narratorOut = "\n\tThere's a locked door in your way." + "\n";
+                            narratorOut = "\n\tNuts! There's a locked door in your way." + "\n";
                         } 
                     }
                     else
                     {
-                        narratorOut = "\n\tYou can't go in that direction." + "\n";
+                        narratorOut = "\n\tYou stop yourself walking headfirst into a wall." + "\n";
                     }
                     break;
 
@@ -84,7 +82,7 @@ namespace ZorgMini
                     if (GetRoom().ItemsInRoom.Contains(thing) && thing.CanBePickedUp == true)
                     {
                         Inventory.Add(thing);
-                        adventureMap.map.FirstOrDefault(r => r.RoomID == GetRoom().RoomID).ItemsInRoom.Remove(thing);
+                        GetRoom().ItemsInRoom.Remove(thing);
                         narratorOut = $"\n\tYou picked up a {thing.Description} {thing.Name.ToLower()}.";
                     }
                     else
